@@ -13,7 +13,24 @@
  * iionly@gmx.de
  */
 
-$english = array(
+// Failsafe translations depending on icon availability
+if (elgg_is_active_plugin('fontawesome')) {
+	$mood_angry = '<i class="fa fa-frown-o"></i>';
+	$mood_neutral = '<i class="fa fa-meh-o"></i>';
+	$mood_happy = '<i class="fa fa-smile-o"></i>';
+	$close = '<i class="fa fa-square-o"></i>';
+	$open = '<i class="fa fa-check-square-o"></i>';
+	$delete = '<i class="fa fa-trash"></i>';
+} else {
+	$mood_angry = ':-(';
+	$mood_neutral = ':-|';
+	$mood_happy = ':-)';
+	$close = 'close';
+	$open = 'open';
+	$delete = 'delete';
+}
+
+return array(
 	'feedback' => 'Feedbacks',
 	'admin:administer_utilities:feedback' => 'Site Feedback',
 	'item:object:feedback' => 'Feedback',
@@ -25,6 +42,7 @@ $english = array(
 	'feedback:numbertodisplay' => 'Number of feedback entries to display',
 
 	'feedback:message' => 'Love it? Hate it? Want to suggest new features or report a bug? We would love to hear from you.',
+	'feedback:message:adminonly' => "<p><strong>Warning: this is not a discussion tool, please use the forum to discuss with other members!</strong></p>",
 
 	'feedback:default:id' => 'Name and/or Email',
 	'feedback:default:txt' => 'Let us know what you think!',
@@ -40,17 +58,20 @@ $english = array(
 
 	'feedback:delete:success' => 'Feedback was deleted successfully.',
 
-	'feedback:mood:' => 'None',
-	'feedback:mood:angry' => 'Angry',
-	'feedback:mood:neutral' => 'Neutral',
-	'feedback:mood:happy' => 'Happy',
+	'feedback:mood:' => '(none)',
+	'feedback:mood:undefined' => '(undefined)',
+	'feedback:mood:angry' => $mood_angry,
+	'feedback:mood:neutral' => $mood_neutral,
+	'feedback:mood:happy' => $mood_happy,
 
-	'feedback:about:' => 'None',
-	'feedback:about:bug_report' => 'Bug Report',
-	'feedback:about:content' => 'Content',
-	'feedback:about:suggestions' => 'Suggestions',
-	'feedback:about:compliment' => 'Compliment',
-	'feedback:about:other' => 'Other',
+	'feedback:about:' => '(undefined)',
+	'feedback:about:bug_report' => '<i class="fa fa-exclamation-circle"></i> Bug Report',
+	'feedback:about:content' => '<i class="fa fa-exclamation-triangle"></i> Content',
+	'feedback:about:suggestions' => '<i class="fa fa-info-circle"></i> Suggestions',
+	'feedback:about:compliment' => '<i class="fa fa-thumbs-o-up"></i> Compliment',
+	'feedback:about:other' => 'Other ',
+	'feedback:about:feedback' => 'Other',
+	'feedback:about:undefined' => '(undefined)',
 
 	'feedback:list:mood' => 'Mood',
 	'feedback:list:about' => 'About',
@@ -68,16 +89,15 @@ $english = array(
 	'feedback:settings:usernames' => "You can enter up to 5 users who should receive notifications if new feedback has been given. Enter the usernames in the following: ",
 
 	'feedback:email:subject' => '[Feedback] %s',
-	'feedback:email:body' => "%s has made a feedback: \"%s\" 
+	'feedback:email:body' => "New feedback from %1\$s about page %5\$s: \"%2\$s\"
 	
-	%s
+	%3\$s
 	
-	View online: %s
+	View online: %4\$s
 	",
 
 
-	// Added by Facyla
-	
+	// Groups
 	'feedback:group' => "Feedbacks",
 	'feedback:option:grouptool' => "Leave choice to each group admin(s)",
 	'feedback:enablefeedback' => "Enable feedback in this group",
@@ -89,39 +109,58 @@ $english = array(
 	'feedback:settings:memberview' => "Are site members allowed to view feedbacks ?",
 	'feedback:settings:comment' => "Enable commenting on / replying to feedbacks ?",
 	'feedback:settings:feedbackgroup' => "Associate feedbacks to one or multiple groups ?",
+	'feedback:settings:enablemood' => "Enable mood in feedbacks",
+	'feedback:settings:enableabout' => "Enable feedback categories",
+	'feedback:settings:about_values' => "Feedback categories (if enabled)",
 	
 	// Feedback status
 	'feedback:status' => "Feedbacks status",
+	'feedback:status:open' => "Open",
+	'feedback:status:closed' => "Closed",
+	'feedback:status:total' => "",
 	'feedback:list:status:open' => "Open",
-	'feedback:status:open' => "Open feedbacks",
 	'feedback:list:status:closed' => "Closed",
-	'feedback:status:closed' => "Closed feedbacks",
+	'feedback:close' => $close,
 	'feedback:closeconfirm' => "A closed feedback is considered as solved, confirm closing feedback ?",
 	'feedback:close:success' => "Feedback marked as closed.",
 	'feedback:close:error' => "Unable to close this feedback",
+	'feedback:reopen' => $open,
 	'feedback:reopenconfirm' => "This feedback is marked as closed. Do you want to mark it as active and confirm re-opening ?",
 	'feedback:reopen:success' => "Feedback marked as open.",
 	'feedback:reopen:error' => "Unable to re-open this feedback",
+	'feedback:delete' => $delete,
 	
 	// Feedbacks menu
 	'feedback:menu:total' => "%s feedbacks",
+	'feedback:menu:total:singular' => "%s feedback",
 	'feedback:menu:open' => "%s opened",
+	'feedback:menu:open:singular' => "%s opened",
 	'feedback:menu:closed' => "%s closed",
+	'feedback:menu:closed:singular' => "%s closed",
 	'feedback:menu:content' => "%s reports",
-	'feedback:menu:bug' => "%s bugs",
-	'feedback:menu:suggestion' => "%s suggestions",
+	'feedback:menu:content:singular' => "%s report",
+	'feedback:menu:bug_report' => "%s bugs",
+	'feedback:menu:bug_report:singular' => "%s bug",
+	'feedback:menu:suggestions' => "%s suggestions",
+	'feedback:menu:suggestions:singular' => "%s suggestion",
 	'feedback:menu:question' => "%s questions",
+	'feedback:menu:question:singular' => "%s question",
 	'feedback:menu:compliment' => "%s compliments",
+	'feedback:menu:compliment:singular' => "%s compliment",
 	'feedback:menu:other' => "%s other / unsorted",
+	'feedback:menu:other:singular' => "%s other / unsorted",
+	
 	
 	// About - feedback types
-	'feedback:about' => "of type",
-	'feedback:about:question' => "Question",
+	//'feedback:about' => "of type",
+	'feedback:about' => ":",
+	'feedback:about:question' => '<i class="fa fa-question-circle"></i> Question',
 	'feedback:access:admin' => "Admin only",
 	'feedback:access:sitemembers' => "Site members",
 	'feedback:access:group' => "Group members",
 
 	'feedback:email:reply:subject' => '[Feedback] %s',
+	'feedback:email:reply:summary' => "%s has replied on \"%s\"",
 	'feedback:email:reply:body' => "%s has replied on \"%s\" :
 	
 	%s
@@ -132,6 +171,4 @@ $english = array(
 	'feedback:linktofeedbacks' => "&raquo;&nbsp;View all previous feedbacks",
 	
 );
-
-add_translation("en", $english);
 
