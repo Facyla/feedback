@@ -13,7 +13,7 @@
  * new features and rewrite by Facyla
  */
 
-$imgurl = elgg_get_site_url() . 'mod/feedback/_graphics/';
+$imgurl = elgg_get_site_url() . 'mod/feedback/graphics/';
 $feedback_url = elgg_get_site_url() . "action/feedback/submit_feedback";
 $feedback_url = elgg_add_action_tokens_to_url($feedback_url);
 $progress_img = '<img src="' . $imgurl . 'ajax-loader.gif" alt="'.elgg_echo('feedback:submit_msg').'" />';
