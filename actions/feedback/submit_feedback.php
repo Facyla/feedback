@@ -30,8 +30,7 @@ if (!elgg_is_logged_in()) {
 		$token = get_input('captcha_token');
 		$input = get_input('captcha_input');
 		if ( !$token || !captcha_verify_captcha($input, $token) ) {
-			$msg = '<div id="feedbackError">' . elgg_echo('captcha:captchafail') . '</div>';
-			echo json_encode(['msg' => $msg, 'error' => 1]);
+			echo '<div id="feedbackError">' . elgg_echo('captcha:captchafail') . '</div>';
 			exit();
 		}
 	}
@@ -39,11 +38,11 @@ if (!elgg_is_logged_in()) {
 
 
 // Get feedbacks vars
-$feedback_txt = get_input('txt');
+$feedback_description = get_input('description');
 $feedback_access_id = (int) get_input('access_id', 0); // Default access = private (admin only)
 $feedback_page = get_input('page');
-$feedback_mood = get_input('mood', 'neutral');
-$feedback_about = get_input('about', 'feedback');
+$feedback_mood = get_input('mood');
+$feedback_about = get_input('about');
 $feedback_sender = get_input('id');
 $feedback_status = get_input('status', 'open'); // Default status = open
 
@@ -53,10 +52,9 @@ if (empty($feedback_about)) { $feedback_about = 'feedback'; }
 if (empty($feedback_status)) { $feedback_status = 'open'; }
 
 // Refuse empty feedbacks
-if (empty($feedback_txt) || empty($feedback_sender)) {
+if (empty($feedback_description) || empty($feedback_sender)) {
 	// Error message
-	$msg = '<div id="feedbackError">' . elgg_echo("feedback:submit:error") . '</div>';
-	echo json_encode(['msg' => $msg, 'error' => 1]);
+	echo '<div id="feedbackError">' . elgg_echo("feedback:submit:error") . '</div>';
 	exit;
 }
 
@@ -79,23 +77,21 @@ if (!elgg_is_logged_in()) {
 }
 // Set the feedback's content
 // Title is used by river...
-$feedback->title = elgg_get_excerpt($feedback_txt, 25);
+$feedback->title = elgg_get_excerpt($feedback_description, 25);
+$feedback->description = $feedback_description;
+$feedback->id = $feedback_sender;
 $feedback->page = $feedback_page;
+$feedback->status = $feedback_status; // Default status = open
 $feedback->mood = $feedback_mood;
 $feedback->about = $feedback_about;
-$feedback->id = $feedback_sender;
-$feedback->txt = $feedback_txt;
-$feedback->status = $feedback_status; // Default status = open
 
 // save the feedback now
 if ($feedback->save()) {
 	// Success message
-	$msg = '<div id="feedbackSuccess">' . elgg_echo("feedback:submit:success") . '</div>';
-	echo json_encode(['msg' => $msg, 'success' => 1]);
+	echo '<div id="feedbackSuccess">' . elgg_echo("feedback:submit:success") . '</div>';
 } else {
 	// Error message
-	$msg = '<div id="feedbackError">' . elgg_echo("feedback:submit:error") . '</div>';
-	echo json_encode(['msg' => $msg, 'error' => 1]);
+	echo '<div id="feedbackError">' . elgg_echo("feedback:submit:error") . '</div>';
 }
 
 // Get feedback text info now, before we potentially lose access to entity (public mode)
@@ -125,7 +121,7 @@ for ($idx=1; $idx<=5; $idx++) {
 if (count($user_guids) > 0) {
 	$subject = elgg_echo('feedback:email:subject', array($feedback_title));
 	foreach ($user_guids as $user_guid => $user) {
-		$message = elgg_echo('feedback:email:body', array($feedback_sender, $feedback_title, $feedback_txt, $feedback_url, $feedback->page));
+		$message = elgg_echo('feedback:email:body', array($feedback_sender, $feedback_title, $feedback_description, $feedback_url, $feedback->page));
 		// Trigger a hook to enable integration with other plugins
 		$hook_message = elgg_trigger_plugin_hook('notify:entity:message', 'object', array('entity' => $feedback, 'to_entity' => $user), $message);
 		// Failsafe backup if hook as returned empty content but not false (= stop)

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Elgg Feedback plugin
  * Feedback interface for Elgg sites
@@ -15,34 +14,28 @@
  */
 
 $imgurl = elgg_get_site_url() . 'mod/feedback/_graphics/';
+$feedback_url = elgg_get_site_url() . "action/feedback/submit_feedback";
+$feedback_url = elgg_add_action_tokens_to_url($feedback_url);
+$progress_img = '<img src="' . $imgurl . 'ajax-loader.gif" alt="'.elgg_echo('feedback:submit_msg').'" />';
 
 $user_ip = $_SERVER['REMOTE_ADDR'];
-
-$user_id = elgg_echo('feedback:default:id');
+//$user_id = elgg_echo('feedback:default:id');
+$user_id = '';
 if (elgg_is_logged_in()) {
 	$user = elgg_get_logged_in_user_entity();
 	$user_id = $user->name . " (" . $user->email .")";
 }
-
-//$ts = time();
-//$token = generate_action_token($ts);
-$feedback_url = elgg_get_site_url() . "action/feedback/submit_feedback"; //"?&__elgg_token=$token&__elgg_ts=$ts";
-$feedback_url = elgg_add_action_tokens_to_url($feedback_url);
-
-$progress_img = '<img src="' . $imgurl . 'ajax-loader.gif" alt="'.elgg_echo('feedback:submit_msg').'" />';
-$err_msg = addslashes('<div id="feedbackError">' . elgg_echo('feedback:submit_err') . '</div>');
 
 $memberview = elgg_get_plugin_setting("memberview", "feedback");
 if ($memberview == 'yes') { $memberview = true; } else { $memberview = false; }
 ?>
 
 <div id="feedbackWrapper">
-	
+
 	<?php echo elgg_view('feedback/toggle_menu'); ?>
-	
+
 	<div id="feedBackContentWrapper">
 		<div id="feedBackContent" class="elgg-module elgg-module-info">
-		
 			<div class="elgg-head">
 				<h3><?php echo elgg_echo('feedback:title'); ?></h3>
 			</div>
@@ -55,29 +48,20 @@ if ($memberview == 'yes') { $memberview = true; } else { $memberview = false; }
 				?>
 			</div>
 
-			<div id="feedBackFormStatus"></div>
-
 			<div id="feedBackFormInputs">
-				<form id="feedBackForm" action="" method="post" onsubmit="FeedBack_Send();return false;">
+				<form id="feedBackForm" action="" method="POST">
 				
-					<div id="feedBackText">
-						<textarea name="feedback_txt" cols="34" rows="10" id="feedback_txt" placeholder="<?php echo elgg_echo('feedback:default:txt'); ?>" class="feedbackTextbox mceNoEditor"></textarea>
-					</div>
-					<?php
-					// Mood
-					if (feedback_is_mood_enabled()) {
+					<?php if (feedback_is_mood_enabled()) {
 						$mood_values = feedback_mood_values();
 						if (sizeof($mood_values) > 1) {
 							?>
-							<div class="feedback-item">
-								<div class="float"><b><?php echo elgg_echo('feedback:list:mood'); ?>&nbsp;: &nbsp</b> 
-									<?php
-									foreach ($mood_values as $mood) {
-										echo '<label class="' . $mood .'"><input type="radio" name="mood" value="' . $mood .'"> ' . elgg_echo("feedback:mood:$mood") . '</label>';
-									}
-									?>
-								</div>
-								<div class="clearfloat"></div>
+							<div id="feedback_mood">
+								<b><?php echo elgg_echo('feedback:list:mood'); ?>&nbsp;: &nbsp</b> 
+								<?php
+								foreach ($mood_values as $mood) {
+									echo '<label class="' . $mood .'"><input type="radio" name="mood" value="' . $mood .'"> ' . elgg_echo("feedback:mood:$mood") . '</label>';
+								}
+								?>
 							</div>
 							<?php
 						} else {
@@ -86,21 +70,19 @@ if ($memberview == 'yes') { $memberview = true; } else { $memberview = false; }
 							echo elgg_view('input/hidden', array('name' => 'mood', 'value' => $unique_value));
 						}
 					}
-				
+					
 					// About / topic
 					if (feedback_is_about_enabled()) {
 						$about_values = feedback_about_values();
 						if (sizeof($about_values) > 1) {
 							?>
-							<div class="feedback-item">
-								<div class="float"><b><?php echo elgg_echo('feedback:list:about'); ?>&nbsp;: &nbsp</b> 
-									<?php
-									foreach ($about_values as $about) {
-										echo '<label class="' . $about .'"><input type="radio" name="about" value="' . $about .'"> ' . elgg_echo("feedback:about:$about") . '</label>';
-									}
-									?>
-								</div>
-								<div class="clearfloat"></div>
+							<div id="feedback_about">
+								<b><?php echo elgg_echo('feedback:list:about'); ?>&nbsp;: &nbsp</b> 
+								<?php
+								foreach ($about_values as $about) {
+									echo '<label class="' . $about .'"><input type="radio" name="about" value="' . $about .'"> ' . elgg_echo("feedback:about:$about") . '</label>';
+								}
+								?>
 							</div>
 							<?php
 						} else {
@@ -109,7 +91,8 @@ if ($memberview == 'yes') { $memberview = true; } else { $memberview = false; }
 							echo elgg_view('input/hidden', array('name' => 'about', 'value' => $unique_value));
 						}
 					}
-				
+					
+					
 					// Access select only if member view is allowed and logged_in
 					// (otherwise use private access_id)
 					if ($memberview && elgg_is_logged_in()) {
@@ -117,35 +100,41 @@ if ($memberview == 'yes') { $memberview = true; } else { $memberview = false; }
 						$access_opt["0"] = elgg_echo('feedback:access:admin');
 						$access_opt["1"] = elgg_echo('feedback:access:sitemembers');
 						$page_owner = elgg_get_page_owner_entity();
-						if (elgg_instanceof($page_owner, 'group')) {
+						if ($page_owner instanceof ElggGroup) {
 							$group_id = $page_owner->group_acl;
 							$access_opt["$group_id"] = elgg_echo('feedback:access:group');
 							$default_access = $group_id;
 						}
-						echo '<div><label>' . elgg_echo('access') . ' ' . elgg_view('input/access', array('name' => 'feedback_access_id', 'value' => $default_access, 'options_values' => $access_opt)) . '</label></div>';
-					} else {
-						echo '<input type="hidden" name="feedback_access_id" value="0" />';
-					}
-					?>
+						?>
+						<div>
+							<label><?php echo elgg_echo('access') . ' ' . elgg_view('input/access', array('name' => 'feedback_access_id', 'value' => $default_access, 'options_values' => $access_opt)); ?></label>
+						</div>
+						<br />
+					<?php } else { ?>
+						<input type="hidden" name="feedback_access_id" value="0" />
+					<?php } ?>
+					<div>
+						<input type="text" name="feedback_id" value="<?php echo $user_id; ?>" id="feedback_id" size="30" placeholder="<?php echo elgg_echo('feedback:default:id'); ?>" class="feedbackText" />
+					</div>
 				
-					<div class="feedback-item">
-						<input type="text" name="feedback_id" value="<?php echo $user_id?>" id="feedback_id" size="30" placeholder="<?php echo elgg_echo('feedback:default:id'); ?>" class="feedbackText" />
+					<div id="feedBackText">
+						<textarea name="feedback_description" cols="34" rows="10" id="feedback_description" placeholder="<?php echo elgg_echo('feedback:default:description'); ?>" class="feedbackTextbox mceNoEditor" required></textarea>
 					</div>
 				
 					<?php
 					// Captcha : only when logged out
-					if (!elgg_is_logged_in() ) {
+					if (!elgg_is_logged_in()) {
 						// if captcha functions are loaded, then use captcha
-						if ( function_exists ( "captcha_generate_token" ) ) {
+						if (function_exists("captcha_generate_token")) {
 							echo elgg_view('input/captcha');
 						}
 					}
 					?>
 				
 					<div id="feedBackSend">
-						<input id="feedback_send_btn" name="" value="<?php echo elgg_echo('send'); ?>" type="button" class="elgg-button elgg-button-submit" onclick="FeedBack_Send();" />
-						<input id="feedback_cancel_btn" name="" value="<?php echo elgg_echo('cancel'); ?>" type="button" class="elgg-button elgg-button-cancel" onclick="FeedBack_Toggle();" />
+						<input id="feedback_send_btn" value="<?php echo elgg_echo('send'); ?>" type="button" class="elgg-button elgg-button-submit" />
 						&nbsp;
+						<input id="feedback_cancel_btn" value="<?php echo elgg_echo('cancel'); ?>" type="button" class="elgg-button elgg-button-cancel" />
 					</div>
 				
 					<?php if ($memberview || elgg_is_admin_logged_in()) {
@@ -154,114 +143,129 @@ if ($memberview == 'yes') { $memberview = true; } else { $memberview = false; }
 					} ?>
 				
 				</form>
-			
 			</div>
+		
+			<div id="feedBackFormStatus"></div>
 		
 			<div id="feedbackClose">
-				<input id="feedback_close_btn" name="<?php echo elgg_echo('close'); ?>" value="Close" type="button" class="elgg-button elgg-button-cancel" onClick="FeedBack_Toggle();" />
+				<input id="feedback_close_btn" name="<?php echo elgg_echo('close'); ?>" value="Close" type="button" class="elgg-button elgg-button-cancel" />
 			</div>
-		
 		</div>
 	</div>
-	
+
 	<div class="clearfloat"></div>
 
 </div>
 
 <script type="text/javascript">
-<?php
-// if user is logged in, disable the feedback ID
-if (elgg_is_logged_in()) { echo "$('#feedback_id').attr ('disabled', 'disabled');"; }
-?>
-$('#feedbackClose').hide();
-var toggle_state = 0;
-
-function FeedBack_Toggle() {
-	if (toggle_state) {
-		toggle_state = 0;
-		$('#feedBackFormInputs').show();
-		$("#feedBackFormStatus").html("");
-		$('#feedbackClose').hide();
-		document.forms["feedBackForm"].reset();
-	} else {
-		toggle_state = 1;
+require(['jquery'], function($){
+	// Handlers
+	// Generic class, to be used for new buttons
+	$('.feedback-toggle').click(function() { FeedBack_Toggle(); });
+	// Handlers for older versions
+	$('#feedBackTogglerLink').click(function() { FeedBack_Toggle(); this.blur(); });
+	$('#feedback_cancel_btn').click(function() { FeedBack_Toggle(); });
+	$('#feedback_close_btn').click(function() { FeedBack_Toggle(); });
+	
+	
+	$('#feedBackForm').submit(function() { FeedBack_Send(); return false; });
+	$('#feedback_send_btn').click(function() { FeedBack_Send(); return false; });
+	
+	
+	
+	<?php
+	// if user is logged in then disable the feedback ID
+	if (elgg_is_logged_in()) {
+		echo "$('#feedback_id').attr ('disabled', 'disabled');";
 	}
-	$("#feedBackTogglerLink .feedback-toggle").toggle();
-	$("#feedBackContentWrapper").toggle();
-}
-
-function FeedBack_Send() {
-	var page = encodeURIComponent(location.href);
-	var mood = $('input[name=mood]:checked').val();
-	var about = $('input[name=about]:checked').val();
-	var access_id = $('*[name=feedback_access_id]').val();
-	var id = $("#feedback_id").val().replace(/^\s+|\s+$/g,"");
-	var txt = encodeURIComponent( $("#feedback_txt").val().replace(/^\s+|\s+$/g,"") );
-
-	// only use captcha when logged out
-	<?php if (!elgg_is_logged_in() && function_exists("captcha_generate_token")) { ?>
-		var captcha_token = $('input[name=captcha_token]').val();
-		var captcha_input = $('input[name=captcha_input]').val();
-		if ((captcha_token != '') && (captcha_input == '')) {
-			alert ( "<?php echo elgg_echo('feedback:captcha:blank'); ?>" );
-			return;
+	?>
+	$('#feedbackClose').hide();
+	var toggle_state = 0;
+	
+	// Toggle function
+	function FeedBack_Toggle() {
+		if (toggle_state) {
+			toggle_state = 0;
+			$("#feedBackTogglerLink .feedback-toggle").toggle();
+			$('#feedBackFormInputs').show();
+			$("#feedBackFormStatus").html("");
+			$('#feedbackClose').hide();
+			document.forms["feedBackForm"].reset();
+		} else {
+			toggle_state = 1;
+			$("#feedBackTogglerLink .feedback-toggle").toggle();
 		}
-	<?php } ?>
 
-	// if no address provided... we don't care about email 'cause we got the IP..
-	if ((id == '') || (id == "<?php echo elgg_echo('feedback:default:id'); ?>")) {
-		alert ( "<?php echo elgg_echo('feedback:id:blank'); ?>" );
-		return;
+		$("#feedBackContentWrapper").toggle();
 	}
-	<?php if (!elgg_is_logged_in()) { ?>
-		id = id + " (<?php echo $user_ip ?>)";
-	<?php } ?>
+	
+	// Check and send feedback
+	function FeedBack_Send() {
+		var page = encodeURIComponent(location.href);
+		var mood = $('input[name=mood]:checked').val();
+		var about = $('input[name=about]:checked').val();
+		var access_id = $('*[name=feedback_access_id]').val();
+		var id = $("#feedback_id").val().replace(/^\s+|\s+$/g,"");
+		var description = encodeURIComponent( $("#feedback_description").val().replace(/^\s+|\s+$/g,"") );
 
-	// if no text provided...
-	if ((txt == '') || (txt == encodeURIComponent("<?php echo elgg_echo('feedback:default:txt'); ?>"))) {
-		alert ( "<?php echo elgg_echo('feedback:default:txt:err'); ?>" );
-		return;
-	}
-
-	// show progress indicator
-	$('#feedBackFormStatus').html('<?php echo $progress_img; ?>');
-
-	// disable the send button while we are submitting
-	$('#feedBackFormInputs').hide();
-
-	// fire the AJAX query
-	jQuery.ajax( {
-		url: "<?php echo $feedback_url; ?>",
-		type: "POST",
 		// only use captcha when logged out
 		<?php if (!elgg_is_logged_in() && function_exists("captcha_generate_token")) { ?>
-			data: "captcha_input="+captcha_input+"&captcha_token="+captcha_token+"&page="+page+"&mood="+mood+"&about="+about+"&id="+id+"&txt="+txt+"&access_id="+access_id,
-		<?php } else { ?>
-			data: "page="+page+"&mood="+mood+"&about="+about+"&id="+id+"&txt="+txt+"&access_id="+access_id,
+			var captcha_token = $('input[name=captcha_token]').val();
+			var captcha_input = $('input[name=captcha_input]').val();
+			if ( captcha_token != '' && captcha_input == '' ) {
+				alert ( "<?php echo elgg_echo('feedback:captcha:blank'); ?>" );
+				return;
+			}
 		<?php } ?>
-		cache: false,
-		dataType: "json",
-		error: function(data) {
-			//$('#feedBackFormInputs').show();
-			$("#feedBackFormStatus").html("<div id='feedbackError'><?php echo elgg_echo('feedback:submit_err'); ?></div>");
-			$('#feedbackClose').show();
-			//document.forms["feedBackForm"].reset();
-		},
-		success: function(response) {
-			if (response.success == 1) {
-				document.forms["feedBackForm"].reset();
-				$('#feedbackClose').slideToggle('slow');
-			} else {
-				$('#feedBackFormInputs').slideToggle(); // show form again
-			}
-			if (response.msg) {
-			$("#feedBackFormStatus").html(data);
-			} else {
-				// Probably logged out meanwhile - so valid response (200) but not from the action (homepage)
-				$("#feedBackFormStatus").html("<?php echo $err_msg; ?>");
-			}
+
+		// if no address provided... we don't care about email 'cause we got the IP..
+		if ( id == '' || id == "<?php echo elgg_echo('feedback:default:id'); ?>" ) {
+			alert ( "<?php echo elgg_echo('feedback:id:blank'); ?>" );
+			return;
 		}
-	});
-}
+		<?php if (!elgg_is_logged_in()) { ?>
+			id = id + " (<?php echo $user_ip ?>)";
+		<?php } ?>
+
+		// if no text provided...
+		if ( description == '' || description == encodeURIComponent("<?php echo elgg_echo('feedback:default:description'); ?>") ) {
+			alert ( "<?php echo elgg_echo('feedback:default:description:err'); ?>" );
+			return;
+		}
+
+		// show progress indicator
+		$('#feedBackFormStatus').html('<?php echo $progress_img; ?>');
+
+		// disable the send button while we are submitting
+		$('#feedBackFormInputs').hide();
+
+		// fire the AJAX query
+		jQuery.ajax( {
+			url: "<?php echo $feedback_url?>",
+			type: "POST",
+			// only use captcha when logged out
+			<?php if (!elgg_is_logged_in() && function_exists("captcha_generate_token")) { ?>
+				data: "captcha_input="+captcha_input+"&captcha_token="+captcha_token+"&page="+page+"&mood="+mood+"&about="+about+"&id="+id+"&description="+description+"&access_id="+access_id,
+			<?php } else { ?>
+				data: "page="+page+"&mood="+mood+"&about="+about+"&id="+id+"&description="+description+"&access_id="+access_id,
+			<?php } ?>
+			cache: false,
+			dataType: "html",
+			error: function() {
+				//$('#feedBackFormInputs').show();
+				$("#feedBackFormStatus").html("<div id='feedbackError'><?php echo elgg_echo('feedback:submit_err'); ?></div>");
+				$('#feedbackClose').show();
+				//document.forms["feedBackForm"].reset();
+			},
+			success: function(data) {
+				//$('#feedBackFormInputs').show(); // show form
+				$("#feedBackFormStatus").html(data);
+				$('#feedbackClose').show();
+				document.forms["feedBackForm"].reset();
+			}
+		});
+	}
+	
+});
 </script>
 

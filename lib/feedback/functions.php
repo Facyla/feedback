@@ -1,131 +1,26 @@
 <?php
-/**
- * Elgg Feedback plugin
- * Feedback interface for Elgg sites
- *
- * @package Feedback
- * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
- * @author Prashant Juvekar
- * @copyright Prashant Juvekar
- * @link http://www.linkedin.com/in/prashantjuvekar
- *
- * for Elgg 1.8 by iionly
- * iionly@gmx.de
- */
-
-elgg_register_event_handler('init', 'system', 'feedback_init');
-
-
-/**
- * Initialize Plugin
- */
-function feedback_init() {
-	// extend the view
-	if (elgg_get_plugin_setting("publicAvailable_feedback", "feedback") == "yes" || elgg_is_logged_in()) {
-		elgg_extend_view('page/elements/footer', 'feedback/footer');
-	}
-	
-	// extend the site CSS
-	elgg_extend_view('css/elgg', 'feedback/css');
-	elgg_extend_view('css/admin', 'feedback/css');
-	
-	// create feedback page in admin section
-	elgg_register_admin_menu_item('administer', 'feedback', 'administer_utilities');
-	// Admin widget
-	elgg_register_widget_type('feedback', elgg_echo('feedback:admin:title'), elgg_echo('feedback:widget:description'), array('admin'));
-	
-	// Give access to feedbacks in groups
-	$feedbackgroup = elgg_get_plugin_setting("feedbackgroup", "feedback");
-	//if (!empty($feedbackgroup) && ($feedbackgroup != 'no') && elgg_is_logged_in()) {
-	if (!empty($feedbackgroup) && ($feedbackgroup != 'no')) {
-		//gatekeeper();
-		//group_gatekeeper();
-		// Add group menu option if no feedback group specified (default = disabled)
-		if ($feedbackgroup == 'grouptool') { add_group_tool_option('feedback', elgg_echo('feedback:enablefeedback'), false); }
-		elgg_extend_view('groups/tool_latest','feedback/grouplisting', 100);
-	}
-	
-	/* Note : these settings are used in views
-	// Allow members to read feedbacks
-	$memberview = elgg_get_plugin_setting("memberview", "feedback");
-	
-	// Allow comments on feedbacks
-	$comment = elgg_get_plugin_setting("comment", "feedback");
-	*/
-	
-	// Register entity type (makes feedbacks eligible for search)
-	elgg_register_entity_type('object','feedback');
-
-	// page handler
-	elgg_register_page_handler('feedback','feedback_page_handler');
-	
-		// Register a URL handler for feedbacks
-	elgg_register_plugin_hook_handler('entity:url', 'object', 'feedback_url');
-	
-	// menu des groupes
-	elgg_register_plugin_hook_handler('register', 'menu:owner_block', 'feedback_owner_block_menu');
-	
-	// Interception des commentaires
-	// Set core notifications system to track the creation of new comments (might also have been enabled by other plugins)
-	elgg_register_notification_event('object', 'comment', array('create'));
-	//elgg_register_event_handler('create', 'annotation', 'feedback_create_annotation_event_handler');
-	elgg_register_plugin_hook_handler("get", "subscriptions", "feedback_comment_get_subscriptions_hook");
-	
-	// @TODO : override feedback message to use our own content
-	// Note : load late to avoid content being modifed by some other plugin
-	elgg_register_plugin_hook_handler('prepare', 'notification:create:object:comment', 'feedback_prepare_comment_notification', 800);
-	
-	// Register actions
-	elgg_register_action('feedback/delete', elgg_get_plugins_path() . 'feedback/actions/delete.php', 'admin');
-	elgg_register_action("feedback/close", elgg_get_plugins_path() . 'feedback/actions/close.php', 'admin');
-	elgg_register_action("feedback/reopen", elgg_get_plugins_path() . 'feedback/actions/reopen.php', 'admin');
-	elgg_register_action('feedback/submit_feedback', elgg_get_plugins_path() . 'feedback/actions/submit_feedback.php', 'public');
-	
-}
-
-
-/**
- * Feedback Page handler
- *
- * @param unknown_type $page
- */
-function feedback_page_handler($page) {
-	switch($page[0]) {
-		case 'view':
-			set_input('guid', $page[1]);
-			include(dirname(__FILE__) . "/pages/feedback/view.php");
-			return true;
-			break;
-		
-		// Following all use default page
-		case 'group': set_input('group', $page[1]); break;
-		case 'status': set_input('status', $page[1]); break;
-		case 'about': set_input('about', $page[1]); set_input('status', $page[2], 'open'); break;
-		case 'mood': set_input('mood', $page[1]); break;
-	}
-	include(dirname(__FILE__) . "/pages/feedback/feedback.php");
-	return true;
-}
 
 /**
  * Populates the ->getUrl() method for feedback objects
  */
-function feedback_url($hook, $type, $url, $params) {
-	$entity = $params['entity'];
-	if (elgg_instanceof($entity, 'object', 'feedback')) {
+function feedback_url(\Elgg\Hook $hook) {
+	$entity = $hook->getEntityParam();
+	if ($entity instanceof ElggFeedback) {
 		return elgg_get_site_url() . 'feedback/view/' . $entity->guid . '/' . elgg_get_friendly_title($entity->title);
 	}
 }
 
 // Feedback menu
-function feedback_owner_block_menu($hook, $type, $return, $params) {
-	if (elgg_instanceof($params['entity'], 'group')) {
+function feedback_owner_block_menu(\Elgg\Hook $hook) {
+	$entity = $hook->getEntityParam();
+	$return = $hook->getValue();
+	if ($entity instanceof ElggGroup) {
 		$feedbackgroup = elgg_get_plugin_setting('feedbackgroup', 'feedback');
 		// Only add feedback to a group if it is allowed
 		if (!empty($feedbackgroup) && ($feedbackgroup != 'no')) {
-			if (($params['entity']->guid == $feedbackgroup) || (($feedbackgroup == 'grouptool') && ($params['entity']->feedback_enable == 'yes')) ) {
-				//add_submenu_item(sprintf(elgg_echo("feedback:group"),$params['entity']->name), $CONFIG->wwwroot . "feedback");
-				$url = "feedback/group/{$params['entity']->guid}";
+			if (($entity->guid == $feedbackgroup) || (($feedbackgroup == 'grouptool') && ($entity->feedback_enable == 'yes')) ) {
+				//add_submenu_item(sprintf(elgg_echo("feedback:group"),$entity->name), $CONFIG->wwwroot . "feedback");
+				$url = "feedback/group/{$entity->guid}";
 				$item = new ElggMenuItem('feedback', elgg_echo('feedback:group'), $url);
 				$return[] = $item;
 			}
@@ -140,7 +35,7 @@ function feedback_create_annotation_event_handler($event, $type, $annotation){
 	if(!empty($annotation) && ($annotation instanceof ElggAnnotation)){
 		// check if the entity isn't PRIVATE
 		if($entity = $annotation->getEntity()){
-			if (elgg_instanceof($entity, 'object', 'feedback')) {
+			if ($entity instanceof ElggFeedback) {
 				$feedback_title = $entity->title;
 				$details = $entity->about;
 				if (!empty($details)) $details .= ', ';
@@ -186,11 +81,11 @@ function feedback_comment_get_subscriptions_hook($hook, $type, $subscriptions, $
 	$entity = $event->getObject();
 	
 	// Process only comments
-	if (!elgg_instanceof($entity, 'object', 'comment')) { return $subscriptions; }
+	if (!($entity instanceof ElggComment)) { return $subscriptions; }
 	
 	// Process only feedback comments
 	$feedback = $event->getObject()->getContainerEntity();
-	if (elgg_instanceof($feedback, 'object', 'feedback')) {
+	if ($feedback instanceof ElggFeedback) {
 		
 		// @TODO : vérifier la bonne valeur à indiquer dans $mtthods
 		//$handlers = _elgg_services()->notifications->getMethods();
@@ -221,11 +116,11 @@ function feedback_prepare_comment_notification($hook, $type, $notification, $par
 	$entity = $event->getObject();
 	
 	// Process only comments
-	if (!elgg_instanceof($entity, 'object', 'comment')) { return $notification; }
+	if (!($entity instanceof ElggComment)) { return $notification; }
 	
 	// Process only feedback comments
 	$feedback = $event->getObject()->getContainerEntity();
-	if (elgg_instanceof($feedback, 'object', 'feedback')) {
+	if ($feedback instanceof ElggFeedback) {
 		$actor = $event->getActor();
 		/*
 		$recipient = $params['recipient'];
@@ -270,7 +165,7 @@ function feedback_mood_values() {
 		$mood_values = array_filter($mood_values, 'strlen');
 	}
 	// Set default
-	if (sizeof($mood_values) < 1) { $mood_values = array('happy', 'neutral', 'angry'); }
+	if (!$mood_values || sizeof($mood_values) < 1) { $mood_values = array('happy', 'neutral', 'angry'); }
 	return $mood_values;
 }
 
@@ -307,11 +202,11 @@ function feedback_about_values() {
  * @return $container
  */
 function feedback_set_page_owner($feedback) {
-	if (!elgg_instanceof($feedback, 'object', 'feedback')) { return false; }
+	if (!($feedback instanceof ElggFeedback)) { return false; }
 	
 	// Specific container if set (valid group, different from owner user itself)
 	$container = $feedback->getContainerEntity();
-	if (elgg_instanceof($container, 'group')) {
+	if ($container instanceof ElggGroup) {
 		elgg_set_page_owner_guid($container->guid);
 		return $container;
 	}
@@ -320,7 +215,7 @@ function feedback_set_page_owner($feedback) {
 	$feedbackgroup = elgg_get_plugin_setting("feedbackgroup", "feedback");
 	if (!empty($feedbackgroup) && !in_array($feedbackgroup, ['no', 'grouptool'])) {
 		$maingroup = get_entity($feedbackgroup);
-		if (elgg_instanceof($maingroup, 'group')) {
+		if ($maingroup instanceof ElggGroup) {
 			elgg_set_page_owner_guid($maingroup->guid);
 			return $maingroup;
 		}
@@ -332,4 +227,28 @@ function feedback_set_page_owner($feedback) {
 	return $site;
 	
 }
+
+
+function feedback_upgrade() {
+	error_log("FEEDBACK UPGRADE");
+	$feedbacks = elgg_get_entities(['type' => 'object', 'subtype' => 'feedback', 'limit' => false]);
+	foreach($feedbacks as $entity) {
+		// Replace "txt" metadata by standard "description" metadata
+		if (empty($entity->description)) {
+			$entity->description = $entity->txt;
+			$entity->txt = null;
+		}
+		// Ensure title is not empty
+		if (empty($entity->title)) { $entity->title = elgg_get_excerpt($entity->txt, 32); }
+		// Set default status (cannot be empty)
+		if (empty($entity->status)) { $entity->status = 'open'; }
+		// About: Remove undefined values (default = no value)
+		if (in_array($entity->about, ['other', 'undefined', 'feedback'])) { $entity->about = null; }
+		// Mood: Remove undefined values (default = no value)
+		if (in_array($entity->mood, ['other'])) { $entity->mood = null; }
+	}
+	return true;
+}
+
+
 

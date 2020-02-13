@@ -3,7 +3,7 @@
 $feedbackgroup = elgg_get_plugin_setting('feedbackgroup', "feedback");
 if (!empty($feedbackgroup) && ($feedbackgroup != 'no') && elgg_is_logged_in()) {
 	$page_owner = elgg_get_page_owner_entity();
-	if (elgg_instanceof($page_owner, 'group')) {
+	if ($page_owner instanceof ElggGroup) {
 		// Only add feedback to a group if it is allowed
 		if (!empty($feedbackgroup) && ($feedbackgroup != 'no')) {
 			if (($page_owner->guid == $feedbackgroup) || (($feedbackgroup == 'grouptool') && ($page_owner->feedback_enable == 'yes')) ) {

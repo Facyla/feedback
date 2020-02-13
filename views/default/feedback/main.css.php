@@ -1,22 +1,7 @@
-<?php
-/**
- * Elgg Feedback plugin
- * Feedback interface for Elgg sites
- *
- * @package Feedback
- * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
- * @author Prashant Juvekar
- * @copyright Prashant Juvekar
- * @link http://www.linkedin.com/in/prashantjuvekar
- *
- * for Elgg 1.8 by iionly
- * iionly@gmx.de
- */
-?>
 
 #feedbackWrapper {
 	position: fixed;
-	top: 150px;
+	top: calc(100vh - 10rem);
 	left: 0px;
 	max-width: 100%;
 	z-index:9990; /* CKeditor is 9999 in fullscreen */
@@ -33,7 +18,7 @@
 	position:relative; 
 	background: #eee;
 	border: 1px outset;
-	border-radius: 0 3px 3px 0;
+	border-radius: 0 8px 8px 0;;
 	border-left: 0;
 	box-shadow: 0 0 3px 0 white;
 }
@@ -68,7 +53,7 @@
 	-webkit-box-shadow: 0px 0px 3px 1px rgba(255, 255, 255, 0.8);
 	-moz-box-shadow: 0px 0px 3px 1px rgba(255, 255, 255, 0.8);
 	box-shadow: 0px 0px 3px 1px rgba(255, 255, 255, 0.8);
-	padding:0 0 6px 0;
+	padding: 0.5rem 1rem;
 }
 
 #feedBackContent h1 {
@@ -83,19 +68,26 @@
 	text-decoration: none;
 }
 
-#feedback_id { margin-top: 0.25rem; }
+.feedback-item {
+	margin-bottom: 0.5rem;
+}
+
+input#feedback_id { width: 100%; }
 
 #feedBackText { padding-top: 0.25rem; }
-#feedback_description { padding: 0.25rem; }
+#feedback_txt { padding: 0.25rem; }
 
 #feedBackSend { padding-top: 0.25rem; }
 
-#feedbackError {
-	font-style: bold;
+#feedbackError, #feedbackSuccess {
+	font-weight: bold;
 	color: black;
+	padding: 0.25rem 0.5rem 0.125rem 0.5rem;
+	margin: 0.25rem 0;
+}
+#feedbackError {
 	background-color: #ff0000;
 }
-
 #feedbackSuccess {
 	color: black;
 	background-color: #00ff00;
@@ -103,17 +95,18 @@
 	padding: 2px 4px;
 }
 
-#feedBackIntro { padding:2px 4px; font-size:13px; }
+#feedBackIntro { padding:2px 4px; font-size: 1rem; }
 
-#feedBackFormInputs { padding:6px; font-size: 12px;}
+#feedBackFormInputs { padding:6px; font-size: 1rem;}
 .feedbackLabel {}
 #feedBackForm label { margin-right: 8px; }
 #feedBackForm input[type="radio"] { margin: 0; }
 
 .feedBackText { width:100%; }
-.feedbackTextbox { width:100%; height:75px; }
+.feedbackTextbox { width:100%; height: 5rem; }
 
-#feedbackDisplay { padding-top:6px; font-size:12px; }
+#feedbackDisplay { padding-top:6px; font-size: 1rem; }
+#feedbackDisplay a { color: black; }
 
 #feedbackClose { padding-top:6px; }
 
@@ -155,6 +148,12 @@
 .feedback-mood { float:left; max-width:25%; margin-right: 1em; }
 .feedback-about { float:left; max-width:40%; margin-right: 1em; }
 
+.elgg-feedback-responses { clear: both; }
+.elgg-item-object.elgg-item-object-feedback .elgg-feedback-responses .elgg-item { min-height: initial; }
+.elgg-item-object.elgg-item-object-feedback .elgg-feedback-responses .elgg-image-block { /* display: block; */ margin: 0; }
+.elgg-item-object.elgg-item-object-feedback .elgg-feedback-responses .elgg-image-block .elgg-image { min-height: initial; box-shadow: none; flex: 0 1 auto; background: none; }
+.elgg-item-object.elgg-item-object-feedback .elgg-feedback-responses .elgg-image-block .elgg-body { min-height: initial; }
+
 
 /* Feedbacks status */
 .feedback-status-open {  }
@@ -162,14 +161,27 @@
 
 .closed_button { float:right; width: auto; padding: 4px; margin:12px 0 0 8px; -webkit-border-radius: 4px; -moz-border-radius: 4px; background:#FFFFFF; border: 1px solid #999999; font: 12px/100% Arial, Helvetica, sans-serif; font-weight: bold; color: #000000; }
 
+
+.submitted-feedback {
+	margin: 5px 0 0;
+	padding: 5px 7px 3px 9px;
+	border: 1px solid #666666;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
 .submitted-feedback .controls { float:right; }
-.submitted-feedback .controls > a, .submitted-feedback .controls > span { margin-right:8px; margin-top:2px; }
+.submitted-feedback .controls > a, .submitted-feedback .controls > span { margin-right: 0.5rem; margin-top:2px; }
 .submitted-feedback .elgg-body { overflow: initial; }
 
 .elgg-module-group-feedback { margin-top: 10px; }
 .elgg-module-group-feedback .elgg-body { margin: 0; padding: 0; }
 .elgg-module-group-feedback .elgg-list { border-top:0;}
 .elgg-module-group-feedback .elgg-list li { border-bottom: 0; }
+
+.feedback-side-menu {  }
+.feedback-side-menu ul li a {  }
 
 
 
@@ -178,6 +190,12 @@
 	#feedBackToggler { position: initial; transform: rotate(90deg); margin-left: 70px; transform-origin: bottom right; height: 30px;  }
 	#feedBackContentWrapper { background: white; left:0; }
 	#feedBackContent { width: auto; max-width: 94%; margin-top: 1rem; }
-
+	
+	/* pour changer l'ordre des champs
+	#feedBackForm { display: flex; flex-direction: column; }
+	#feedBackText { order: -1; }
+	*/
+	
 }
+
 

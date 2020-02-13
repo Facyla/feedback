@@ -13,25 +13,7 @@
  * iionly@gmx.de
  */
 
-// Failsafe translations depending on icon availability
-if (elgg_is_active_plugin('fontawesome')) {
-	$mood_angry = '<i class="fa fa-frown-o"></i>';
-	$mood_neutral = '<i class="fa fa-meh-o"></i>';
-	$mood_happy = '<i class="fa fa-smile-o"></i>';
-	$close = '<i class="fa fa-square-o"></i>';
-	$open = '<i class="fa fa-check-square-o"></i>';
-	$delete = '<i class="fa fa-trash"></i>';
-} else {
-	$mood_angry = ':-(';
-	$mood_neutral = ':-|';
-	$mood_happy = ':-)';
-	$close = 'clore';
-	$open = 'rouvrir';
-	$delete = 'supprimer';
-}
-
-
-return array(
+return [
 	'feedback' => 'Feedbacks',
 	'admin:administer_utilities:feedback' => 'Feedbacks du site',
 	'item:object:feedback' => 'Feedback',
@@ -46,8 +28,8 @@ return array(
 	'feedback:message:adminonly' => "<p><strong>Attention, ceci n'est pas un outil de discussion : pour cela utilisez les commentaires !</strong></p>",
 
 	'feedback:default:id' => 'Nom et/ou Email',
-	'feedback:default:txt' => 'Dites-nous ce que vous en pensez !',
-	'feedback:default:txt:err' => 'Aucun message de feedback.\nNous apprécions vos suggestions et critiques.\nVeuillez saisir votre message et cliquer sur Envoyer.',
+	'feedback:default:description' => 'Dites-nous ce que vous en pensez !',
+	'feedback:default:description:err' => 'Aucun message de feedback.\nNous apprécions vos suggestions et critiques.\nVeuillez saisir votre message et cliquer sur Envoyer.',
 
 	'feedback:id:blank' => 'Adresse email non renseignée !',
 	'feedback:captcha:blank' => 'Captcha non renseigné !',
@@ -62,15 +44,15 @@ return array(
 
 	'feedback:mood:' => '(aucun)',
 	'feedback:mood:undefined' => '(non défini)',
-	'feedback:mood:angry' => $mood_angry,
-	'feedback:mood:neutral' => $mood_neutral,
-	'feedback:mood:happy' => $mood_happy,
-
+	'feedback:mood:angry' => '<i class="far fa-frown"></i>',
+	'feedback:mood:neutral' => '<i class="far fa-meh"></i>',
+	'feedback:mood:happy' => '<i class="far fa-smile"></i>',
+	
 	'feedback:about:' => '(non défini)',
-	'feedback:about:bug_report' => '<i class="fa fa-exclamation-circle"></i> Bugs',
-	'feedback:about:content' => '<i class="fa fa-exclamation-triangle"></i> Contenus',
-	'feedback:about:suggestions' => '<i class="fa fa-info-circle"></i> Suggestions',
-	'feedback:about:compliment' => '<i class="fa fa-thumbs-o-up"></i> Compliments',
+	'feedback:about:bug_report' => '<i class="fas fa-exclamation-circle"></i> Bugs',
+	'feedback:about:content' => '<i class="fas fa-exclamation-triangle"></i> Contenus',
+	'feedback:about:suggestions' => '<i class="fas fa-info-circle"></i> Suggestions',
+	'feedback:about:compliment' => '<i class="far fa-thumbs-up"></i> Compliments',
 	'feedback:about:other' => 'Autres',
 	'feedback:about:feedback' => '(non classé)',
 	'feedback:about:undefined' => '(non défini)',
@@ -122,15 +104,15 @@ return array(
 	'feedback:status:total' => "",
 	'feedback:list:status:open' => "Ouvert",
 	'feedback:list:status:closed' => "Résolu",
-	'feedback:close' => $close,
+	'feedback:close' => '<i class="far fa-square"></i>',
 	'feedback:closeconfirm' => "Marquer comme résolu ? Un feedback résolu est considéré comme traité et alimente la base de connaissances. Confirmer ?",
 	'feedback:close:success' => "Feedback marqué comme résolu / déjà traité.",
 	'feedback:close:error' => "Impossible de marquer ce feedback comme résolu",
-	'feedback:reopen' => $open,
+	'feedback:reopen' => '<i class="far fa-check-square"></i>',
 	'feedback:reopenconfirm' => "Ce feedback est considéré comme déjà résolu. Souhaitez-vous le rouvrir ?",
 	'feedback:reopen:success' => "Feedback marqué comme en cours / non résolu.",
 	'feedback:reopen:error' => "Impossible de rouvrir ce feedback",
-	'feedback:delete' => $delete,
+	'feedback:delete' => '<i class="fas fa-trash"></i>',
 	
 	// Feedbacks menu
 	'feedback:menu:total' => "%s feedbacks",
@@ -156,7 +138,7 @@ return array(
 	// About - feedback types
 	//'feedback:about' => "de type",
 	'feedback:about' => ":",
-	'feedback:about:question' => '<i class="fa fa-question-circle"></i> Question',
+	'feedback:about:question' => '<i class="far fa-question-circle"></i> Question',
 	'feedback:access:admin' => "Administrateur seulement",
 	'feedback:access:sitemembers' => "Membres du site",
 	'feedback:access:group' => "Membres du groupe",
@@ -172,5 +154,16 @@ return array(
 	
 	'feedback:linktofeedbacks' => "&raquo;&nbsp;Afficher les précédents feedbacks",
 	
-);
+	// Search
+	'feedback:status:nofilter' => "(pas de filtre)",
+	'feedback:about:nofilter' => "(pas de filtre)",
+	'feedback:about:undefined' => "(aucun)",
+	'feedback:mood:nofilter' => "(pas de filtre)",
+	'feedback:mood:undefined' => "(aucun)",
+	'feedback:search:mood:angry' => 'Négatif',
+	'feedback:search:mood:neutral' => 'Neutre',
+	'feedback:search:mood:happy' => 'Positif',
+	
+	
+];
 

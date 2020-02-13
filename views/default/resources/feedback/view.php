@@ -28,7 +28,7 @@ feedback_set_page_owner($feedback);
 
 $content = elgg_view_entity($feedback, array('full_view' => true));
 
-$body = elgg_view_layout('one_sidebar', array(
+$body = elgg_view_layout('default', array(
 	'content' => $content,
 	'title' => $title,
 	'sidebar' => elgg_view('feedback/sidebar'),

@@ -13,24 +13,8 @@
  * iionly@gmx.de
  */
 
-// Failsafe translations depending on icon availability
-if (elgg_is_active_plugin('fontawesome')) {
-	$mood_angry = '<i class="fa fa-frown-o"></i>';
-	$mood_neutral = '<i class="fa fa-meh-o"></i>';
-	$mood_happy = '<i class="fa fa-smile-o"></i>';
-	$close = '<i class="fa fa-square-o"></i>';
-	$open = '<i class="fa fa-check-square-o"></i>';
-	$delete = '<i class="fa fa-trash"></i>';
-} else {
-	$mood_angry = ':-(';
-	$mood_neutral = ':-|';
-	$mood_happy = ':-)';
-	$close = 'close';
-	$open = 'open';
-	$delete = 'delete';
-}
 
-return array(
+return [
 	'feedback' => 'Feedbacks',
 	'admin:administer_utilities:feedback' => 'Site Feedback',
 	'item:object:feedback' => 'Feedback',
@@ -45,8 +29,8 @@ return array(
 	'feedback:message:adminonly' => "<p><strong>Warning: this is not a discussion tool, please use the forum to discuss with other members!</strong></p>",
 
 	'feedback:default:id' => 'Name and/or Email',
-	'feedback:default:txt' => 'Let us know what you think!',
-	'feedback:default:txt:err' => 'No feedback message has been provided.\nWe value your suggestions and criticisms.\nPlease enter your message and press Send.',
+	'feedback:default:description' => 'Let us know what you think!',
+	'feedback:default:description:err' => 'No feedback message has been provided.\nWe value your suggestions and criticisms.\nPlease enter your message and press Send.',
 
 	'feedback:captcha:blank' => 'No captcha input provided!',
 
@@ -60,15 +44,15 @@ return array(
 
 	'feedback:mood:' => '(none)',
 	'feedback:mood:undefined' => '(undefined)',
-	'feedback:mood:angry' => $mood_angry,
-	'feedback:mood:neutral' => $mood_neutral,
-	'feedback:mood:happy' => $mood_happy,
+	'feedback:mood:angry' => '<i class="far fa-frown-o"></i>',
+	'feedback:mood:neutral' => '<i class="far fa-meh-o"></i>',
+	'feedback:mood:happy' => '<i class="far fa-smile-o"></i>',
 
 	'feedback:about:' => '(undefined)',
-	'feedback:about:bug_report' => '<i class="fa fa-exclamation-circle"></i> Bug Report',
-	'feedback:about:content' => '<i class="fa fa-exclamation-triangle"></i> Content',
-	'feedback:about:suggestions' => '<i class="fa fa-info-circle"></i> Suggestions',
-	'feedback:about:compliment' => '<i class="fa fa-thumbs-o-up"></i> Compliment',
+	'feedback:about:bug_report' => '<i class="fas fa-exclamation-circle"></i> Bug Report',
+	'feedback:about:content' => '<i class="fas fa-exclamation-triangle"></i> Content',
+	'feedback:about:suggestions' => '<i class="fas fa-info-circle"></i> Suggestions',
+	'feedback:about:compliment' => '<i class="far fa-thumbs-o-up"></i> Compliment',
 	'feedback:about:other' => 'Other ',
 	'feedback:about:feedback' => 'Other',
 	'feedback:about:undefined' => '(undefined)',
@@ -120,15 +104,15 @@ return array(
 	'feedback:status:total' => "",
 	'feedback:list:status:open' => "Open",
 	'feedback:list:status:closed' => "Closed",
-	'feedback:close' => $close,
+	'feedback:close' => '<i class="far fa-square-o"></i>',
 	'feedback:closeconfirm' => "A closed feedback is considered as solved, confirm closing feedback ?",
 	'feedback:close:success' => "Feedback marked as closed.",
 	'feedback:close:error' => "Unable to close this feedback",
-	'feedback:reopen' => $open,
+	'feedback:reopen' => '<i class="far fa-check-square"></i>',
 	'feedback:reopenconfirm' => "This feedback is marked as closed. Do you want to mark it as active and confirm re-opening ?",
 	'feedback:reopen:success' => "Feedback marked as open.",
 	'feedback:reopen:error' => "Unable to re-open this feedback",
-	'feedback:delete' => $delete,
+	'feedback:delete' => '<i class="fas fa-trash"></i>',
 	
 	// Feedbacks menu
 	'feedback:menu:total' => "%s feedbacks",
@@ -154,7 +138,7 @@ return array(
 	// About - feedback types
 	//'feedback:about' => "of type",
 	'feedback:about' => ":",
-	'feedback:about:question' => '<i class="fa fa-question-circle"></i> Question',
+	'feedback:about:question' => '<i class="far fa-question-circle"></i> Question',
 	'feedback:access:admin' => "Admin only",
 	'feedback:access:sitemembers' => "Site members",
 	'feedback:access:group' => "Group members",
@@ -170,5 +154,5 @@ return array(
 	
 	'feedback:linktofeedbacks' => "&raquo;&nbsp;View all previous feedbacks",
 	
-);
+];
 

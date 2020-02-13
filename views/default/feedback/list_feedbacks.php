@@ -45,8 +45,8 @@ foreach ($all_feedback as $ent) {
 	// Uncomment to correct title bug retroactively - use once if needed, then comment again
 	/*
 	global $is_admin; $ignore_admin = $is_admin; $is_admin = true;
-	if (!empty($ent->txt)) {
-		$ent->title = substr(strip_tags($ent->txt), 0, 50);
+	if (!empty($ent->description)) {
+		$ent->title = substr(strip_tags($ent->description), 0, 50);
 		$ent->save();
 	}
 	$is_admin = $ignore_admin;

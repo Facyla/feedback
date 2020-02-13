@@ -13,7 +13,7 @@
  * iionly@gmx.de
  */
 
-return array(
+return [
 	'feedback' => 'Feedbacks',
 	'admin:administer_utilities:feedback' => 'Feedback für die Community-Seite',
 	'item:object:feedback' => 'Feedback',
@@ -27,8 +27,8 @@ return array(
 	'feedback:message' => 'Zufrieden? Unzufrieden? Du möchtest neue Features vorschlagen oder einen Bug melden? Wir würden uns freuen, von Dir zu hören.',
 
 	'feedback:default:id' => 'Name und/oder Email-Adresse',
-	'feedback:default:txt' => 'Teile uns mit, was Du denkst!',
-	'feedback:default:txt:err' => 'Bei Deinem Feedback hat leider die Nachricht gefehlt.\nWir sind auf Deine Vorschläge oder Kritik gespannt.\nBitte gebe Deine Nachricht ein, bevor Du Dein Feedback versendest.',
+	'feedback:default:description' => 'Teile uns mit, was Du denkst!',
+	'feedback:default:description:err' => 'Bei Deinem Feedback hat leider die Nachricht gefehlt.\nWir sind auf Deine Vorschläge oder Kritik gespannt.\nBitte gebe Deine Nachricht ein, bevor Du Dein Feedback versendest.',
 
 	'feedback:captcha:blank' => 'Das Captcha wurde nicht korrekt eingegeben.',
 
@@ -108,6 +108,5 @@ return array(
 	'feedback:access:admin' => "Admin only",
 	'feedback:access:sitemembers' => "Site members",
 	'feedback:access:group' => "Group members",
-
-);
+];
 

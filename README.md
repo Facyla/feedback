@@ -1,5 +1,8 @@
-# Feedback plugin for Elgg
+Feedback plugin for Elgg 2.3
+----------------------------
 Provides a powerful feedback tool with communication and bugtracker features
+License: GNU General Public License version 2
+Copyright: (c) Facyla (1.8 improvements), iionly (for Elgg 1.8), Simon ST (for Elgg 1.7), Prashant Juvekar (initial plugin)
 
 This plugin displays a feedback dialog window on the left hand side of the pages on your Elgg site. 
 The dialog window starts minimized and can be opened by a "feedback" "button. The feedback button shows up on all pages on your site when a user is logged in. For logged-out site visitors you can configure the feedback button to show or not via a plugin setting.
@@ -38,6 +41,7 @@ Note: if updating from Elgg 1.8 version, or from an early Elgg 1.12 version, you
 
 
 ## Changelog
+ * 2.3 - AMD for JS
  * 1.12.1 : Production version released as independant plugin
  * 1.12.0 : 2016 Updated to Elgg 1.12
 	 - FA icons

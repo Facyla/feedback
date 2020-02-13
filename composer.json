@@ -1,6 +1,6 @@
 {
 	"name": "facyla/feedback",
-	"version": "1.12.0",
+	"version": "3.3.0",
 	"type": "elgg-plugin",
 	"repositories": [
 		{
@@ -21,7 +21,7 @@
 		}
 	],
 	"keywords": [
-		"elgg", "plugin", "user", "admin", "content", "communication"
+		"elgg", "plugin", "user", "admin", "content", "communication", "feedback"
 	],
 }
 
