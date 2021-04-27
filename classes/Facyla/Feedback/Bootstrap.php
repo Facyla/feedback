@@ -29,7 +29,7 @@ class Bootstrap extends DefaultPluginBootstrap {
 	public function init() {
 		// extend the site CSS
 		elgg_extend_view('elgg.css', 'feedback/main.css');
-		elgg_extend_view('admin.css', 'feedback/main.css');
+		elgg_extend_view('admin.css', 'feedback/admin.css');
 		
 		//elgg_require_js('feedback/feedback');
 		

@@ -129,8 +129,6 @@ $count = elgg_get_entities(['count' => true] + $options);
 $content .= elgg_list_entities($options);
 $content .= '<div class="clearfloat"></div>';
 
-// @dev Force upgrade
-//feedback_upgrade();
 
 // Sidebar menu - Menu latéral
 $sidebar = elgg_view('feedback/sidebar');

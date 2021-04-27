@@ -230,8 +230,8 @@ function feedback_set_page_owner($feedback) {
 
 
 function feedback_upgrade() {
-	error_log("FEEDBACK UPGRADE");
-	$feedbacks = elgg_get_entities(['type' => 'object', 'subtype' => 'feedback', 'limit' => false]);
+	echo "FEEDBACK UPGRADE : <br />";
+	$feedbacks = elgg_get_entities(['type' => 'object', 'subtype' => 'feedback', 'metadata_names' => "txt", 'limit' => false]);
 	foreach($feedbacks as $entity) {
 		// Replace "txt" metadata by standard "description" metadata
 		if (empty($entity->description)) {
@@ -246,7 +246,9 @@ function feedback_upgrade() {
 		if (in_array($entity->about, ['other', 'undefined', 'feedback'])) { $entity->about = null; }
 		// Mood: Remove undefined values (default = no value)
 		if (in_array($entity->mood, ['other'])) { $entity->mood = null; }
+		echo "{$entity->guid} {$entity->title} : OK<br />";
 	}
+	echo "Terminé.";
 	return true;
 }
 

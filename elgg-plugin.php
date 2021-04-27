@@ -74,7 +74,7 @@ return [
 			//'middleware' => [\Elgg\Router\Middleware\Gatekeeper::class,],
 		],
 		'feedback:view' => [
-			'path' => '/feedback/view/{guid?}',
+			'path' => '/feedback/view/{guid?}/{title?}',
 			'resource' => 'feedback/view',
 			'middleware' => [
 			//'middleware' => [\Elgg\Router\Middleware\Gatekeeper::class,],

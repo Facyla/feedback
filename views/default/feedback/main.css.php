@@ -1,3 +1,18 @@
+<?php
+/**
+ * Elgg Feedback plugin
+ * Feedback interface for Elgg sites
+ *
+ * @package Feedback
+ * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public License version 2
+ * @author Prashant Juvekar
+ * @copyright Prashant Juvekar
+ * @link http://www.linkedin.com/in/prashantjuvekar
+ *
+ * for Elgg 1.8 by iionly
+ * iionly@gmx.de
+ */
+?>
 
 #feedbackWrapper {
 	position: fixed;
@@ -75,7 +90,7 @@
 input#feedback_id { width: 100%; }
 
 #feedBackText { padding-top: 0.25rem; }
-#feedback_txt { padding: 0.25rem; }
+#feedback_description { padding: 0.25rem; }
 
 #feedBackSend { padding-top: 0.25rem; }
 
@@ -116,7 +131,9 @@ input#feedback_id { width: 100%; }
 .captcha-right { float:none; }
 .captcha-input-text { width:100px; }
 
-.submitted-feedback { padding:2px; margin-bottom:4px; }
+.submitted-feedback { padding:2px; margin-bottom:4px; background: white; }
+
+#feedbackAccess { margin-bottom: 1rem; }
 
 /* Feedbacks mood */
 #feedback_mood { margin-bottom: 0.25rem; }

@@ -97,6 +97,9 @@ return [
 	'feedback:settings:enableabout' => "Activer les catégories de feedback",
 	'feedback:settings:about_values' => "Catégories de feedback (si activées)",
 	
+	// Admin view
+	'feedback:upgrade' => "Mettre à niveau les feedbacks",
+	
 	// Feedback status
 	'feedback:status' => "Statut des feedbacks",
 	'feedback:status:open' => "Ouverts",

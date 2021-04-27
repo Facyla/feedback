@@ -101,19 +101,19 @@ if ($memberview == 'yes') { $memberview = true; } else { $memberview = false; }
 						$access_opt["1"] = elgg_echo('feedback:access:sitemembers');
 						$page_owner = elgg_get_page_owner_entity();
 						if ($page_owner instanceof ElggGroup) {
-							$group_id = $page_owner->group_acl;
+							//$group_id = $page_owner->group_acl;
+							$group_id = $page_owner->getOwnedAccessCollection('group_acl')->id;
 							$access_opt["$group_id"] = elgg_echo('feedback:access:group');
 							$default_access = $group_id;
 						}
 						?>
-						<div>
+						<div id="feedbackAccess">
 							<label><?php echo elgg_echo('access') . ' ' . elgg_view('input/access', array('name' => 'feedback_access_id', 'value' => $default_access, 'options_values' => $access_opt)); ?></label>
 						</div>
-						<br />
 					<?php } else { ?>
 						<input type="hidden" name="feedback_access_id" value="0" />
 					<?php } ?>
-					<div>
+					<div id="feedbackId">
 						<input type="text" name="feedback_id" value="<?php echo $user_id; ?>" id="feedback_id" size="30" placeholder="<?php echo elgg_echo('feedback:default:id'); ?>" class="feedbackText" />
 					</div>
 				
